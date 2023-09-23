@@ -16,7 +16,7 @@ snv_find2_control=snv188t[-snv_trainIndex,]
 
 a2.lrn_ranger_importance1   = lrn("classif.ranger",id="Ranger", importance = "impurity",predict_type="prob",num.threads=32)
 
-snv_gout_0w <- as_task_classif(snv188t,target="target_snv")
+snv_gout_0w <- as_task_classif(snv140t,target="target_snv")
 set.seed(1567)
 instance_ranger = fsi(
   task = snv_gout_0w ,
