@@ -1,0 +1,46 @@
+Alistipes_putredinis_GCA_000154465.1_ASM15446v1_genomic Bacteroides_caccae_GCA_001405955.1_14207_7_3_genomic Bacteroides_fragilis_GCA_016889925.1_ASM1688992v1_genomic Bacteroides_ovatus_GCA_001314995.1_ASM131499v1_genomic Bacteroides_stercoris_GCA_000154525.1_ASM15452v1_genomic Bacteroides_thetaiotaomicron_GCA_000011065.1_ASM1106v1_genomic Bacteroides_uniformis_GCA_018292165.1_ASM1829216v1_genomic Bacteroides_xylanisolvens_GCA_018289135.1_ASM1828913v1_genomic Eubacterium_rectale_GCA_000020605.1_ASM2060v1_genomic Faecalibacterium_prausnitzii_GCA_003312465.1_ASM331246v1_genomic Fusobacterium_mortiferum_GCA_003019315.1_ASM301931v1_genomic Lachnospira_eligens_GCA_000146185.1_ASM14618v1_genomic Megamonas_funiformis_GCA_019974115.1_ASM1997411v1_genomic Parabacteroides_distasonis_GCA_000012845.1_ASM1284v1_genomic Phascolarctobacterium_faecium_GCF_900683765.1_Phascolarctobacterium_succinatutens_82G5_genomic Phocaeicola_coprocola_GCF_027688575.1_ASM2768857v1_genomic Phocaeicola_dorei_GCA_000156075.1_ASM15607v1_genomic Phocaeicola_massiliensis_GCA_000382445.1_Bact_mass_DSM_17679_V1_genomic Phocaeicola_plebeius_GCA_000187895.1_ASM18789v1_genomic Phocaeicola_vulgatus_GCA_000012825.1_ASM1282v1_genomic Prevotella_copri_GCA_000157935.1_ASM15793v1_genomic Roseburia_inulinivorans_GCA_020731525.1_ASM2073152v1_genomic Ruminococcus_gnavus_GCA_009831375.1_ASM983137v1_genomic
+###############################################################
+
+cd /mnt/sdb/fa
+cat *.fna>all23.fasta
+
+conda activate python 
+
+for i in ; do prodigal -i /mnt/sdb/fa/${i}.fna -d /mnt/sdb/bowtie2/bt2/prodigal_${i}.fna -a /mnt/sdb/bowtie2/bt2/prodigal_${i}.faa ;done
+
+
+#prodigal###########################
+cd /mnt/sdb/bowtie2/bt2/
+cat *.faa > all.faa
+cat *.fna > all.fna
+
+
+########instrain############################################
+
+
+
+parse_stb.py --reverse -f Alistipes_putredinis_GCA_000154465.1_ASM15446v1_genomic.fna Bacteroides_caccae_GCA_001405955.1_14207_7_3_genomic.fna Bacteroides_fragilis_GCA_016889925.1_ASM1688992v1_genomic.fna Bacteroides_ovatus_GCA_001314995.1_ASM131499v1_genomic.fna Bacteroides_stercoris_GCA_000154525.1_ASM15452v1_genomic.fna Bacteroides_thetaiotaomicron_GCA_000011065.1_ASM1106v1_genomic.fna Bacteroides_uniformis_GCA_018292165.1_ASM1829216v1_genomic.fna Bacteroides_xylanisolvens_GCA_018289135.1_ASM1828913v1_genomic.fna Eubacterium_rectale_GCA_000020605.1_ASM2060v1_genomic.fna Faecalibacterium_prausnitzii_GCA_003312465.1_ASM331246v1_genomic.fna Fusobacterium_mortiferum_GCA_003019315.1_ASM301931v1_genomic.fna Lachnospira_eligens_GCA_000146185.1_ASM14618v1_genomic.fna Megamonas_funiformis_GCA_019974115.1_ASM1997411v1_genomic.fna Parabacteroides_distasonis_GCA_000012845.1_ASM1284v1_genomic.fna Phascolarctobacterium_faecium_GCF_900683765.1_Phascolarctobacterium_succinatutens_82G5_genomic.fna Phocaeicola_coprocola_GCF_027688575.1_ASM2768857v1_genomic.fna Phocaeicola_dorei_GCA_000156075.1_ASM15607v1_genomic.fna Phocaeicola_massiliensis_GCA_000382445.1_Bact_mass_DSM_17679_V1_genomic.fna Phocaeicola_plebeius_GCA_000187895.1_ASM18789v1_genomic.fna Phocaeicola_vulgatus_GCA_000012825.1_ASM1282v1_genomic.fna Prevotella_copri_GCA_000157935.1_ASM15793v1_genomic.fna Roseburia_inulinivorans_GCA_020731525.1_ASM2073152v1_genomic.fna Ruminococcus_gnavus_GCA_009831375.1_ASM983137v1_genomic.fna -o genomes.stb
+####################################################################################
+conda activate fastp
+cd /mnt/sdb/bowtie2/
+for i in  G150T0  ; do { bowtie2 -p 64 -x all23 -1 /mnt/sdb/bowtie2/25/${i}.RemoveHost_clean_fastp_bowtie2.1.fastq -2 /mnt/sdb/bowtie2/25/${i}.RemoveHost_clean_fastp_bowtie2.2.fastq >  /mnt/sdb/bowtie2/sam_25/${i}.sam 
+}
+done
+
+####################################################################
+conda activate instrain
+##bb00,bb0,aa00,aa0w,aa2w,aa4w,aa24w
+for i in C86 C88 C91 C92 C93 C94 C95 C96 C97 C98 C99  ; do inStrain profile /mnt/sdb/bowtie2/sam_23/${i}.sam /mnt/sdb/bowtie2/all23.fasta -o /mnt/sdb/bowtie2/instrain_23/${i}.RemoveHost.IS -p 32 -g /mnt/sdb/bowtie2/all.fna -s /mnt/sdb/bowtie2/genomes.stb  --min_genome_coverage 10 --skip_plot_generation --skip_mm_profiling --min_read_ani 0.95 ;done 
+
+
+
+
+
+> p1
+[1] "AP024966.1_1945747"   "AP024966.1_997151"    "CP028102.1_1479939"   "DS995537.1_720709"    "NZ_LR215982.1_315382"
+
+
+
+
+
+

@@ -1,0 +1,35 @@
+###################fastp,发现队列0w实验组#####################
+conda activate fastp
+for i in ; do {
+fastp --in1 /mnt/sdb/data/gout_2_4w_find/${i}.RemoveHost_1.fq.gz\
+ --in2 /mnt/sdb/data/gout_2_4w_find/${i}.RemoveHost_2.fq.gz\
+ --out1 /mnt/sdb/cleandata/aa4w/${i}.RemoveHost_1_clean_fastp.fastq\
+ --out2 /mnt/sdb/cleandata/aa4w/${i}.RemoveHost_2_clean_fastp.fastq\
+ --json /mnt/sdb/cleandata/aa4w/a${i}.RemoveHost_1_clean_fastp.json\
+ --html /mnt/sdb/cleandata/aa4w/a${i}.RemoveHost_1_clean_fastp.html    --thread 16
+}
+done
+#########利用kneaddata的数据库#####################
+conda activate fastp
+cd /mnt/sdb/kneaddata_database
+for i in  ; do {
+bowtie2 -p 24 -x hg37dec_v0.1\
+ -1 /mnt/sdb/cleandata/bb/${i}.RemoveHost_1_clean_fastp.fastq\
+ -2 /mnt/sdb/cleandata/bb/${i}.RemoveHost_2_clean_fastp.fastq\
+ -S /mnt/sdb/bowtie2/${i}.RemoveHost_bowtie2.sam\
+ --un-conc /mnt/sdb/bowtie2/${i}.RemoveHost_clean_fastp_bowtie2.fastq
+}
+done
+####利用人类HG19序列####################################################
+conda activate fastp
+cd /mnt/sdb/hg19
+for i in ; do {
+bowtie2 -p 60 -x hg19\
+ -1 /mnt/sdb/cleandata/${i}.RemoveHost_1_clean_fastp.fastq\
+ -2 /mnt/sdb/cleandata/${i}.RemoveHost_2_clean_fastp.fastq\
+ -S /mnt/sdb/bowtie2/${i}.RemoveHost_bowtie2.sam\
+ --un-conc /mnt/sdb/bowtie2/${i}.RemoveHost_clean_fastp_bowtie2.fastq
+}
+done
+###############################################
+

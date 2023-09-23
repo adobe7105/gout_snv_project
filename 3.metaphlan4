@@ -1,0 +1,20 @@
+conda activate metaphlan4
+cd /mnt/sdb/cleandata/bb0
+for i in C100 C101 C102 C103 C105 C106 C107 C108 C109 C110 C84 C85 C86 C88 C91 C92 C93 C94 C95 C96 C97 C98 C99  ; do {
+metaphlan ${i}.RemoveHost_clean_fastp_bowtie2.1.fastq\
+,${i}.RemoveHost_clean_fastp_bowtie2.2.fastq --input_type fastq\
+ -o /mnt/sdb/metaphlan/${i}.txt --nproc 60 --stat_q 0.2 --bowtie2out /mnt/sdb/metaphlan/bowtie2out_${i}.bz2
+}
+done
+
+cd /mnt/sdb/metaphlan
+merge_metaphlan_tables.py *.txt > merge_abundance_table.txt
+
+grep -E '(s__)|(clade_name)' merge_abundance_table.txt |grep -v 't__'|sed 's/^.*s__//g'|awk '{print}'|sed 's/\ \ /\ /g'|sed 's/\ /\t/g' > merged_abundance_table_species.txt
+grep -E '(g__)|(clade_name)' merge_abundance_table.txt |grep -v 's__'|sed 's/^.*g__//g'|awk '{print}'|sed 's/\ \ /\ /g'|sed 's/\ /\t/g' > merged_abundance_table_genus.txt
+grep -E '(f__)|(clade_name)' merge_abundance_table.txt |grep -v 'g__'|sed 's/^.*f__//g'|awk '{print}'|sed 's/\ \ /\ /g'|sed 's/\ /\t/g' > merged_abundance_table_family.txt
+grep -E '(o__)|(clade_name)' merge_abundance_table.txt |grep -v 'f__'|sed 's/^.*o__//g'|awk '{;print}'|sed 's/\ \ /\ /g'|sed 's/\ /\t/g' > merged_abundance_table_order.txt
+grep -E '(c__)|(clade_name)' merge_abundance_table.txt |grep -v 'o__'|sed 's/^.*c__//g'|awk '{print}'|sed 's/\ \ /\ /g'|sed 's/\ /\t/g' > merged_abundance_table_class.txt
+grep -E '(p__)|(clade_name)' merge_abundance_table.txt |grep -v 'c__'|sed 's/^.*p__//g'|awk '{$2=null;print}'|sed 's/\ \ /\ /g'|sed 's/\ /\t/g' > merged_abundance_table_phylum.txt
+
+
